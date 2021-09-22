@@ -1,18 +1,14 @@
-package autoprovision
+package appstoreconnectclient
 
 import (
 	"fmt"
 	"net/http"
 
+	"github.com/bitrise-steplib/steps-ios-auto-provision-appstoreconnect/devportal"
+
 	"github.com/bitrise-io/go-xcode/devportalservice"
 	"github.com/bitrise-steplib/steps-ios-auto-provision-appstoreconnect/appstoreconnect"
 )
-
-// DeviceClient ...
-type DeviceClient interface {
-	ListDevices(udid string, platform appstoreconnect.DevicePlatform) ([]appstoreconnect.Device, error)
-	RegisterDevice(testDevice devportalservice.TestDevice) (*appstoreconnect.Device, error)
-}
 
 // APIDeviceClient ...
 type APIDeviceClient struct {
@@ -20,7 +16,7 @@ type APIDeviceClient struct {
 }
 
 // NewAPIDeviceClient ...
-func NewAPIDeviceClient(client *appstoreconnect.Client) DeviceClient {
+func NewAPIDeviceClient(client *appstoreconnect.Client) devportal.DeviceClient {
 	return &APIDeviceClient{client: client}
 }
 

@@ -1,4 +1,4 @@
-package autoprovision
+package autocodesign
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 	"github.com/bitrise-io/go-utils/pathutil"
 	"github.com/bitrise-io/go-xcode/xcodeproject/serialized"
 	"github.com/bitrise-io/go-xcode/xcodeproject/xcodeproj"
+	"github.com/bitrise-steplib/steps-ios-auto-provision-appstoreconnect/devportal"
 	"github.com/stretchr/testify/require"
 )
 
@@ -95,7 +96,7 @@ func TestNew(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			projHelp, conf, err := NewProjectHelper(tt.projOrWSPath, tt.schemeName, tt.configurationName)
+			projHelp, err := NewProjectHelper(tt.projOrWSPath, tt.schemeName, tt.configurationName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -103,8 +104,8 @@ func TestNew(t *testing.T) {
 			if projHelp == nil {
 				t.Errorf("New() error = No projectHelper was generated")
 			}
-			if conf != tt.wantConfiguration {
-				t.Errorf("New() got1 = %v, want %v", conf, tt.wantConfiguration)
+			if projHelp.Configuration != tt.wantConfiguration {
+				t.Errorf("New() got1 = %v, want %v", projHelp.Configuration, tt.wantConfiguration)
 			}
 		})
 	}
@@ -367,7 +368,7 @@ func TestProjectHelper_TargetBundleID(t *testing.T) {
 		}
 		xcProjCases = append(xcProjCases, xcProj)
 
-		projHelp, _, err := NewProjectHelper(
+		projHelp, err := NewProjectHelper(
 			projectCases[i],
 			schemeCase,
 			configCases[i],
@@ -511,7 +512,7 @@ func initTestCases() ([]string, []string, []xcodeproj.XcodeProj, []ProjectHelper
 		}
 		xcProjCases = append(xcProjCases, xcProj)
 
-		projHelp, _, err := NewProjectHelper(
+		projHelp, err := NewProjectHelper(
 			projectCases[i],
 			schemeCase,
 			configCases[i],
@@ -600,7 +601,7 @@ func TestProjectHelper_targetEntitlements(t *testing.T) {
 
 func Test_resolveEntitlementVariables(t *testing.T) {
 	type args struct {
-		entitlements Entitlement
+		entitlements devportal.Entitlement
 		bundleID     string
 	}
 	tests := []struct {
